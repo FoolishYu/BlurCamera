@@ -1,0 +1,5 @@
+<resources>
+    <dimen name="fab_margin">16dp</dimen>
+    <!-- Module Indicator -->
+    <dimen name="module_indicator_width">50dp</dimen>
+</resources>

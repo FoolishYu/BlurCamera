@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">BlurCamera</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="guide_double_text">DPhoto</string>
+    <string name="guide_photo_text">Photo</string>
+    <string name="guide_video_text">Video</string>
+    <string name="guide_scan_text">Scan</string>
+    <string name="guide_pano_text">Pano</string>
+</resources>
