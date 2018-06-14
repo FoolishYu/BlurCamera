@@ -9,13 +9,15 @@
     android:id="@+id/cl_content"
     tools:context="com.opengl.android.blurcamera.MainActivity"
     tools:showIn="@layout/activity_main">
-    <android.opengl.GLSurfaceView
+    <com.opengl.android.blurcamera.widget.CameraSurfaceView
         android:id="@+id/camera_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-    <include layout="@layout/camera_indicator_layout"
-             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"/>
+    <include layout="@layout/camera_indicator_layout"/>
 
 </android.support.constraint.ConstraintLayout>

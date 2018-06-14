@@ -1,9 +1,12 @@
 package com.opengl.android.blurcamera;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -12,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.opengl.android.blurcamera.widget.CameraIndicator;
+import com.opengl.android.blurcamera.widget.CameraSurfaceView;
 
 import static com.opengl.android.blurcamera.widget.CameraIndicator.CameraMode.DOUBLE_PHOTO_MODE;
 import static com.opengl.android.blurcamera.widget.CameraIndicator.CameraMode.VIDEO_MODE;
@@ -19,11 +23,16 @@ import static com.opengl.android.blurcamera.widget.CameraIndicator.CameraMode.VI
 public class MainActivity extends AppCompatActivity implements GestureDetector.OnGestureListener{
     private static final String TAG = MainActivity.class.getSimpleName();
     private GestureDetector mGestureDetector;
+    private static final int CAMERA_REQUEST_CODE = 1000;
     private int mCurrentMode = CameraIndicator.CameraMode.PHOTO_MODE;
     private CameraIndicator mIndicator;
+    private CameraSurfaceView mCameraSurfaceView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_REQUEST_CODE);
+        }
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -40,8 +49,21 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         ConstraintLayout mainContent = (ConstraintLayout) findViewById(R.id.cl_content);
         mainContent.setOnTouchListener(new CLOnTouchListener());
         mIndicator = (CameraIndicator) findViewById(R.id.moduleguide);
+        mCameraSurfaceView = (CameraSurfaceView) findViewById(R.id.camera_view);
+
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+//        mCameraSurfaceView.bringToFront();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mCameraSurfaceView.onPause();
+    }
 
     private class CLOnTouchListener implements View.OnTouchListener {
         @Override
