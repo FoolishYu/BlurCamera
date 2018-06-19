@@ -11,6 +11,7 @@ import android.util.Log;
 import com.opengl.android.blurcamera.camera.CameraInstance;
 import com.opengl.android.blurcamera.camera.DirectDrawer;
 import com.opengl.android.blurcamera.camera.FilterRenderer;
+import com.opengl.android.blurcamera.camera.GLBitmap;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -22,14 +23,17 @@ import javax.microedition.khronos.opengles.GL10;
 
 public class CameraSurfaceView extends GLSurfaceView implements GLSurfaceView.Renderer,SurfaceTexture.OnFrameAvailableListener, CameraInstance.CamOpenedCallback {
     public static final String TAG="CameraSurfaceView";
+    private boolean mShowBitmap = false;
     private Context mContext;
     private SurfaceTexture mSurface;
     private int mTextureID = -1;
     private DirectDrawer mDirectDrawer;
     private FilterRenderer mFilterDrawer;
+    GLBitmap glBitmap;
     public CameraSurfaceView(Context context, AttributeSet attrs) {
         super(context, attrs);
         setEGLContextClientVersion(2);
+        glBitmap = new GLBitmap();
         setRenderer(this);
         setRenderMode(RENDERMODE_WHEN_DIRTY);
         this.mContext=context;
@@ -51,7 +55,6 @@ public class CameraSurfaceView extends GLSurfaceView implements GLSurfaceView.Re
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
         Log.i(TAG, "onSurfaceCreated...");
         mTextureID = createTextureID();
-
         mDirectDrawer = new DirectDrawer(mTextureID);
         //mFilterDrawer=new FilterRenderer(mContext);
         //mTextureID=mFilterDrawer.getmTexture();
@@ -80,6 +83,10 @@ public class CameraSurfaceView extends GLSurfaceView implements GLSurfaceView.Re
         float[] mtx = new float[16];
         mSurface.getTransformMatrix(mtx);
         mDirectDrawer.draw(mtx);
+        if(mShowBitmap) {
+            glBitmap.loadGLTexture(gl10, mContext);
+            glBitmap.draw(gl10);
+        }
     }
 
     @Override
@@ -107,5 +114,9 @@ public class CameraSurfaceView extends GLSurfaceView implements GLSurfaceView.Re
                 GL10.GL_TEXTURE_WRAP_T, GL10.GL_CLAMP_TO_EDGE);
 
         return texture[0];
+    }
+
+    public void setShowBitmap(boolean show) {
+        mShowBitmap = show;
     }
 }
