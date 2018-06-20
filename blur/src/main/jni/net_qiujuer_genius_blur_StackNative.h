@@ -4,6 +4,8 @@
 
 #ifndef _Included_net_qiujuer_genius_blur_StackNative
 #define _Included_net_qiujuer_genius_blur_StackNative
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -27,6 +29,10 @@ JNIEXPORT void JNICALL
         (JNIEnv
          *, jclass, jobject, jint);
 
+
+JNIEXPORT void JNICALL
+Java_net_qiujuer_genius_blur_StackNative_yuv2rgb(JNIEnv *env, jclass type, jbyteArray yuv_,
+                                                 jint width, jint height, jintArray rgba_);
 #ifdef __cplusplus
 }
 #endif

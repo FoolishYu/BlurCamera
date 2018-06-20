@@ -51,4 +51,6 @@ class StackNative {
      * @param r      Blur radius
      */
     protected static native void blurBitmap(Bitmap bitmap, int r);
+
+    protected static native void yuv2rgb(byte[] yuv, int width, int height, int[] rgba);
 }

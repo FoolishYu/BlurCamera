@@ -121,7 +121,7 @@ public class TiledTexture implements Texture {
             sCanvas.drawBitmap(bitmap, x, y, sBitmapPaint);
             bitmap = null;
 
-            // draw borders if need
+            // drawExt borders if need
             if (x > 0)
                 sCanvas.drawLine(x - 1, 0, x - 1, TILE_SIZE, sPaint);
             if (y > 0)
@@ -175,7 +175,7 @@ public class TiledTexture implements Texture {
 
                 // It will take some time for a texture to be drawn for the
                 // first
-                // time. When scrolling, we need to draw several tiles on the
+                // time. When scrolling, we need to drawExt several tiles on the
                 // screen
                 // at the same time. It may cause a UI jank even these textures
                 // has
@@ -237,7 +237,7 @@ public class TiledTexture implements Texture {
         sPaint.setColor(Color.TRANSPARENT);
     }
 
-    // We want to draw the "source" on the "target".
+    // We want to drawExt the "source" on the "target".
     // This method is to find the "output" rectangle which is
     // the corresponding area of the "src".
     // (x,y) target

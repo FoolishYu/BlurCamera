@@ -303,7 +303,7 @@ class NinePatchInstance {
          * Given a 3x3 nine-patch image, the vertex order is defined as the
          * following graph: (0) (1) (2) (3) | /| /| /| | / | / | / | (4) (5) (6)
          * (7) | \ | \ | \ | | \| \| \| (8) (9) (A) (B) | /| /| /| | / | / | / |
-         * (C) (D) (E) (F) And we draw the triangle strip in the following index
+         * (C) (D) (E) (F) And we drawExt the triangle strip in the following index
          * order: index: 04152637B6A5948C9DAEBF
          */
         int pntCount = 0;

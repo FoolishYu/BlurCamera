@@ -1,6 +1,8 @@
 package com.opengl.android.blurcamera.widget;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.SurfaceTexture;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
@@ -8,10 +10,14 @@ import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.util.Log;
 
+import com.opengl.android.blurcamera.MainActivity;
+import com.opengl.android.blurcamera.R;
 import com.opengl.android.blurcamera.camera.CameraInstance;
 import com.opengl.android.blurcamera.camera.DirectDrawer;
 import com.opengl.android.blurcamera.camera.FilterRenderer;
 import com.opengl.android.blurcamera.camera.GLBitmap;
+
+import net.qiujuer.genius.blur.StackBlur;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -24,11 +30,16 @@ import javax.microedition.khronos.opengles.GL10;
 public class CameraSurfaceView extends GLSurfaceView implements GLSurfaceView.Renderer,SurfaceTexture.OnFrameAvailableListener, CameraInstance.CamOpenedCallback {
     public static final String TAG="CameraSurfaceView";
     private boolean mShowBitmap = false;
+    private boolean front = true;
     private Context mContext;
     private SurfaceTexture mSurface;
+    private int frameNum = 0;
+    private int dropFrameCount = 6;
     private int mTextureID = -1;
+    private SurfaceCallback mSurfaceCallback;
     private DirectDrawer mDirectDrawer;
     private FilterRenderer mFilterDrawer;
+    private Bitmap bitmap;
     GLBitmap glBitmap;
     public CameraSurfaceView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -37,6 +48,14 @@ public class CameraSurfaceView extends GLSurfaceView implements GLSurfaceView.Re
         setRenderer(this);
         setRenderMode(RENDERMODE_WHEN_DIRTY);
         this.mContext=context;
+        mSurfaceCallback = (MainActivity)context;
+        bitmap = BitmapFactory.decodeResource(context.getResources(),
+                R.drawable.d3camera);
+    }
+
+    public interface SurfaceCallback {
+        public void surfaceCreated();
+        public void frameAvailable();
     }
 
     @Override
@@ -60,7 +79,7 @@ public class CameraSurfaceView extends GLSurfaceView implements GLSurfaceView.Re
         //mTextureID=mFilterDrawer.getmTexture();
         mSurface = new SurfaceTexture(mTextureID);
         mSurface.setOnFrameAvailableListener(this);
-        CameraInstance.getInstance().doOpenCamera(null);
+        CameraInstance.getInstance().doOpenCamera(null, false);
         if(!CameraInstance.getInstance().isPreviewing()){
             CameraInstance.getInstance().doStartPreview(mSurface, 1.33f);
         }
@@ -82,17 +101,23 @@ public class CameraSurfaceView extends GLSurfaceView implements GLSurfaceView.Re
 
         float[] mtx = new float[16];
         mSurface.getTransformMatrix(mtx);
-        mDirectDrawer.draw(mtx);
+        mDirectDrawer.drawExt(mtx);
         if(mShowBitmap) {
-            glBitmap.loadGLTexture(gl10, mContext);
-            glBitmap.draw(gl10);
+            mDirectDrawer.draw(mtx, bitmap);
         }
     }
 
     @Override
     public void onFrameAvailable(SurfaceTexture surfaceTexture) {
         this.requestRender();
+        if (frameNum >= 0 && frameNum < dropFrameCount) {
+            frameNum++;
+        } else if (frameNum == dropFrameCount) {
+            mSurfaceCallback.frameAvailable();
+            frameNum = -1;
+        }
     }
+
 
     @Override
     public void cameraHasOpened() {
@@ -116,7 +141,24 @@ public class CameraSurfaceView extends GLSurfaceView implements GLSurfaceView.Re
         return texture[0];
     }
 
+
     public void setShowBitmap(boolean show) {
         mShowBitmap = show;
+        if(mShowBitmap) {
+            byte[] yuv = CameraInstance.getInstance().getPreviewData();
+            bitmap = StackBlur.blurYuv(yuv, CameraInstance.getInstance().getmPreviewSize().width, CameraInstance.getInstance().getmPreviewSize().height, 8);
+            try {
+                CameraInstance.getInstance().doStopCamera();
+                CameraInstance.getInstance().doOpenCamera(null, front);
+                frameNum = 0;
+                CameraInstance.getInstance().doStartPreview(mSurface, 1.33f);
+                front = !front;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            setRenderMode(RENDERMODE_WHEN_DIRTY);
+            requestRender();
+        }
     }
 }

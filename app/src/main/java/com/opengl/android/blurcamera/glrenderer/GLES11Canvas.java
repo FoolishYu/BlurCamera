@@ -340,7 +340,7 @@ public class GLES11Canvas implements GLCanvas {
             }
             textureRect(x, y, width, height);
         } else {
-            // draw the rect from bottom-left to top-right
+            // drawExt the rect from bottom-left to top-right
             float points[] = mapPoints(
                     mMatrixValues, x, y + height, x + width, y);
             x = (int) (points[0] + 0.5f);

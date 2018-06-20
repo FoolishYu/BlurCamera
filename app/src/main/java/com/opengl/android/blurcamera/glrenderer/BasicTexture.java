@@ -105,7 +105,7 @@ public abstract class BasicTexture implements Texture {
     // the transparent border, the color of the edge texel will be mixed with
     // appropriate amount of transparent.
     //
-    // Currently our background is black, so we can draw the thumbnails without
+    // Currently our background is black, so we can drawExt the thumbnails without
     // enabling blending.
     public boolean hasBorder() {
         return mHasBorder;

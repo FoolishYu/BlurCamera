@@ -108,6 +108,23 @@ final public class StackBlur extends StackNative {
         return (bitmap);
     }
 
+
+    public static int findBestRatio(int raw, int target) {
+        int diff4 = Math.abs(raw / 4 - target);
+        int diff8 = Math.abs(raw / 8 - target);
+        return diff4 < diff8 ? 4 : 8;
+    }
+
+    public static Bitmap blurYuv(byte[] data, int width, int height, int radius) {
+        int[] rgba = new int[width * height];
+        yuv2rgb(data, width, height,rgba);
+        //blurPixels(rgba, width, height, radius);
+        int ratio = findBestRatio(width, 160);
+        Bitmap blurBmp = Bitmap.createBitmap(rgba, width, height, Bitmap.Config.ARGB_8888);
+        Bitmap scaleBitmap = Bitmap.createScaledBitmap(blurBmp, width/ratio, height/ratio, false);
+        blurBmp = blur(scaleBitmap, radius, false);
+        return blurBmp;
+    }
     /**
      * StackBlur By Java Bitmap
      *

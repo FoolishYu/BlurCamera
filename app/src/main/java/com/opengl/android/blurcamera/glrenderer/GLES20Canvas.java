@@ -443,7 +443,7 @@ public class GLES20Canvas implements GLCanvas {
     private static final int INDEX_POSITION = 0;
     private static final int INDEX_MATRIX = 1;
 
-    // Handle indices -- draw
+    // Handle indices -- drawExt
     private static final int INDEX_COLOR = 2;
 
     // Handle indices -- texture
@@ -1049,7 +1049,7 @@ public class GLES20Canvas implements GLCanvas {
         // }
         GLES20.glUniformMatrix4fv(params[INDEX_MATRIX].handle, 1, false, vertexMatrix, MATRIX_SIZE);
 
-        // draw(params, GLES20.GL_TRIANGLE_STRIP, COUNT_FILL_VERTEX,
+        // drawExt(params, GLES20.GL_TRIANGLE_STRIP, COUNT_FILL_VERTEX,
         // target.left, target.top,
         // target.width(), target.height());
         if (texture.isFlippedVertically()) {

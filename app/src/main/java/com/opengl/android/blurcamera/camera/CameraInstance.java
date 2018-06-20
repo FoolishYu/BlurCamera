@@ -22,6 +22,7 @@ public class CameraInstance {
     private static CameraInstance mCameraInstance;
     private boolean isPreviewing=false;
     private boolean isOpened=false;
+    private boolean isFront = false;
     private Camera.Size mPreviewSize;
     private Camera.Size mPictureSize;
     public interface CamOpenedCallback{
@@ -33,7 +34,19 @@ public class CameraInstance {
     public boolean isOpened(){
         return isOpened;
     }
-    public Camera.Size getmPreviewSize(){return mPreviewSize;}
+    public Camera.Size getmPreviewSize(){
+        if(mCamera != null) {
+            return mCamera.getParameters().getPreviewSize();
+        }
+        return null;
+    }
+
+    public List<Camera.Size> getSupportedPreviewSize() {
+        if(mCamera != null) {
+            return mCamera.getParameters().getSupportedPreviewSizes();
+        }
+        return null;
+    }
 
     private CameraInstance(){
 
@@ -45,10 +58,17 @@ public class CameraInstance {
         return mCameraInstance;
     }
 
-    public void doOpenCamera(CamOpenedCallback callback){
+    public void doOpenCamera(CamOpenedCallback callback, boolean front){
         Log.i(TAG, "doOpenCamera....");
         if(mCamera == null){
-            mCamera = Camera.open();
+            if(front) {
+                isFront = front;
+                mCamera = Camera.open(Camera.CameraInfo.CAMERA_FACING_FRONT);
+            } else {
+                isFront = front;
+                mCamera = Camera.open(Camera.CameraInfo.CAMERA_FACING_BACK);
+            }
+
             isOpened=true;
             Log.i(TAG, "Camera open over....");
             if(callback != null){
@@ -70,6 +90,14 @@ public class CameraInstance {
         if(mCamera != null){
             try {
                 mCamera.setPreviewTexture(surface);
+                mCamera.setPreviewCallback(mPreviewCallback);
+                Camera.Parameters param = mCamera.getParameters();
+//                if(isFront) {
+//                    param.setPreviewSize(720, 720);
+//                } else {
+//                    param.setPreviewSize(1920, 1080);
+//                }
+                mCamera.setParameters(param);
                 mCamera.startPreview();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -78,6 +106,7 @@ public class CameraInstance {
         }
 
     }
+
     /**
      * 停止预览，释放Camera
      */
@@ -136,6 +165,17 @@ public class CameraInstance {
 
         }
     }
+
+    public byte[] getPreviewData() {
+        return mPreviewData;
+    }
+    private byte[] mPreviewData;
+    Camera.PreviewCallback mPreviewCallback = new Camera.PreviewCallback() {
+        @Override
+        public void onPreviewFrame(byte[] data, Camera camera) {
+            mPreviewData = data;
+        }
+    };
 
     Camera.ShutterCallback mShutterCallback = new Camera.ShutterCallback()
             //快门按下的回调，在这里我们可以设置类似播放“咔嚓”声之类的操作。默认的就是咔嚓。

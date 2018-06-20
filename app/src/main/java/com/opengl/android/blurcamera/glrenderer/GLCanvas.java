@@ -6,7 +6,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 
 //
-// GLCanvas gives a convenient interface to draw using OpenGL.
+// GLCanvas gives a convenient interface to drawExt using OpenGL.
 //
 // When a rectangle is specified in this interface, it means the region
 // [x, x+width) * [y, y+height)
@@ -18,7 +18,7 @@ public interface GLCanvas {
     // Tells GLCanvas the size of the underlying GL surface. This should be
     // called before first drawing and when the size of GL surface is changed.
     // This is called by GLRoot and should not be called by the clients
-    // who only want to draw on the GLCanvas. Both width and height must be
+    // who only want to drawExt on the GLCanvas. Both width and height must be
     // nonnegative.
     void setSize(int width, int height);
 
@@ -98,7 +98,7 @@ public interface GLCanvas {
     void drawMixed(BasicTexture from, int toColor, float ratio, RectF src, RectF target);
 
     // Unloads the specified texture from the canvas. The resource allocated
-    // to draw the texture will be released. The specified texture will return
+    // to drawExt the texture will be released. The specified texture will return
     // to the unloaded state. This function should be called only from
     // BasicTexture or its descendant
     boolean unloadTexture(BasicTexture texture);

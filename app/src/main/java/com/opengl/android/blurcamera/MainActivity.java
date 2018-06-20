@@ -2,6 +2,7 @@ package com.opengl.android.blurcamera;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -14,19 +15,24 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.opengl.android.blurcamera.camera.CameraInstance;
 import com.opengl.android.blurcamera.widget.CameraIndicator;
 import com.opengl.android.blurcamera.widget.CameraSurfaceView;
+
+import java.util.List;
 
 import static com.opengl.android.blurcamera.widget.CameraIndicator.CameraMode.DOUBLE_PHOTO_MODE;
 import static com.opengl.android.blurcamera.widget.CameraIndicator.CameraMode.VIDEO_MODE;
 
-public class MainActivity extends AppCompatActivity implements GestureDetector.OnGestureListener{
+public class MainActivity extends AppCompatActivity implements GestureDetector.OnGestureListener, CameraSurfaceView.SurfaceCallback{
     private static final String TAG = MainActivity.class.getSimpleName();
     private GestureDetector mGestureDetector;
     private static final int CAMERA_REQUEST_CODE = 1000;
     private int mCurrentMode = CameraIndicator.CameraMode.PHOTO_MODE;
     private CameraIndicator mIndicator;
     private CameraSurfaceView mCameraSurfaceView;
+    private boolean mShowRGB;
+    private boolean mChangedCamera = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +48,9 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-                mCameraSurfaceView.setShowBitmap(true);
+                mShowRGB = !mShowRGB;
+                mChangedCamera = true;
+                mCameraSurfaceView.setShowBitmap(mShowRGB);
             }
         });
 
@@ -64,6 +72,28 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
     protected void onPause() {
         super.onPause();
         mCameraSurfaceView.onPause();
+    }
+
+    @Override
+    public void surfaceCreated() {
+
+    }
+
+    @Override
+    public void frameAvailable() {
+        Log.e(TAG, "frameAvailable");
+        if(mChangedCamera) {
+            mShowRGB = !mShowRGB;
+            mCameraSurfaceView.setShowBitmap(mShowRGB);
+            Camera.Size curSize = CameraInstance.getInstance().getmPreviewSize();
+            Log.e(TAG, "current previewSize " + curSize.width + "x" + curSize.height);
+            List<Camera.Size> lists = CameraInstance.getInstance().getSupportedPreviewSize();
+            for(Camera.Size item:lists) {
+                Log.e(TAG, "previewSize " + item.width + "x" + item.height);
+            }
+        } else {
+            mChangedCamera = !mChangedCamera;
+        }
     }
 
     private class CLOnTouchListener implements View.OnTouchListener {
