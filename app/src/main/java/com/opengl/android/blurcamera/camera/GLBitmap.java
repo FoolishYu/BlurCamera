@@ -68,7 +68,7 @@ public class GLBitmap {
         gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER,
                 GL10.GL_LINEAR);
 
-        // Use Android GLUtils to specify a two-dimensional texture image from
+        // Use Android GLUtil to specify a two-dimensional texture image from
         // our bitmap
         android.opengl.GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
 

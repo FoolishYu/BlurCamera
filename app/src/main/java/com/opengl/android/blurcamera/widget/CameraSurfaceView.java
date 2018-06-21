@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.SurfaceTexture;
-import android.hardware.Camera;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
@@ -14,7 +13,7 @@ import android.util.Log;
 import com.opengl.android.blurcamera.MainActivity;
 import com.opengl.android.blurcamera.R;
 import com.opengl.android.blurcamera.camera.CameraInstance;
-import com.opengl.android.blurcamera.camera.DirectDrawer;
+import com.opengl.android.blurcamera.camera.DirectDrawerImprove;
 import com.opengl.android.blurcamera.camera.FilterRenderer;
 import com.opengl.android.blurcamera.camera.GLBitmap;
 
@@ -40,7 +39,8 @@ public class CameraSurfaceView extends GLSurfaceView implements GLSurfaceView.Re
     private int dropFrameCount = 6;
     private int mTextureID = -1;
     private SurfaceCallback mSurfaceCallback;
-    private DirectDrawer mDirectDrawer;
+    //private DirectDrawer mDirectDrawer;
+    private DirectDrawerImprove mDirectDrawer;
     private FilterRenderer mFilterDrawer;
     private Bitmap bitmap;
     GLBitmap glBitmap;
@@ -70,28 +70,18 @@ public class CameraSurfaceView extends GLSurfaceView implements GLSurfaceView.Re
     @Override
     public void onResume() {
         super.onResume();
-//        if(mSurface != null && !CameraInstance.getInstance().isOpened()) {
-//            CameraInstance.getInstance().doOpenCamera(null, false);
-//            if(!CameraInstance.getInstance().isPreviewing()){
-//                CameraInstance.getInstance().doStartPreview(mSurface, 1.33f);
-//            }
-//        }
     }
 
     @Override
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
         Log.i(TAG, "onSurfaceCreated...");
         mTextureID = createTextureID();
-        if(front) {
-            mDirectDrawer = new DirectDrawer(mTextureID);
-        } else {
-            mDirectDrawer = new DirectDrawer(mTextureID);
-        }
-        if(front) {
-            mDirectDrawer.setCameraId(Camera.CameraInfo.CAMERA_FACING_FRONT);
-        } else {
-            mDirectDrawer.setCameraId(Camera.CameraInfo.CAMERA_FACING_BACK);
-        }
+        mDirectDrawer = new DirectDrawerImprove(mTextureID);
+//        if(front) {
+//            mDirectDrawer.setCameraId(Camera.CameraInfo.CAMERA_FACING_FRONT);
+//        } else {
+//            mDirectDrawer.setCameraId(Camera.CameraInfo.CAMERA_FACING_BACK);
+//        }
         //mFilterDrawer=new FilterRenderer(mContext);
         //mTextureID=mFilterDrawer.getmTexture();
         mSurface = new SurfaceTexture(mTextureID);
@@ -119,9 +109,9 @@ public class CameraSurfaceView extends GLSurfaceView implements GLSurfaceView.Re
         float[] mtx = new float[16];
         mSurface.getTransformMatrix(mtx);
         Log.e(TAG, "transformMatrix :" + Arrays.toString(mtx));
-        mDirectDrawer.drawExt(mtx);
+        mDirectDrawer.drawExternalOES(mtx);
         if(mShowBitmap) {
-            mDirectDrawer.draw(mtx, bitmap);
+            mDirectDrawer.drawBlurBitmap(mtx, bitmap);
         }
     }
 
@@ -131,11 +121,11 @@ public class CameraSurfaceView extends GLSurfaceView implements GLSurfaceView.Re
         if (frameNum >= 0 && frameNum < dropFrameCount) {
             frameNum++;
         } else if (frameNum == dropFrameCount) {
-            if(front) {
-                mDirectDrawer.setCameraId(Camera.CameraInfo.CAMERA_FACING_FRONT);
-            } else {
-                mDirectDrawer.setCameraId(Camera.CameraInfo.CAMERA_FACING_BACK);
-            }
+//            if(front) {
+//                mDirectDrawer.setCameraId(Camera.CameraInfo.CAMERA_FACING_FRONT);
+//            } else {
+//                mDirectDrawer.setCameraId(Camera.CameraInfo.CAMERA_FACING_BACK);
+//            }
             mSurfaceCallback.frameAvailable();
             frameNum = -1;
         }

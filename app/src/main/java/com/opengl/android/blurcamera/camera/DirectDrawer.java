@@ -188,11 +188,11 @@ public class DirectDrawer {
         checkError();
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
         checkError();
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 200);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
         checkError();
-        //android.opengl.GLUtils.texSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, bitmap, format, type);
+        //android.opengl.GLUtil.texSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, bitmap, format, type);
         if(bmp == null){
             bmp = Bitmap.createBitmap(128, 128, Bitmap.Config.ARGB_8888);
             bmp.eraseColor(Color.GREEN);

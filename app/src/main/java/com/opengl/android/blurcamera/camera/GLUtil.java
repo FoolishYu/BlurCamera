@@ -15,8 +15,8 @@ import java.io.InputStream;
  * UPDATE
  */
 
-public class GLUtils {
-    private static final String TAG="GLUtils";
+public class GLUtil {
+    private static final String TAG="GLUtil";
     /**
      * 加载着色器方法
      *

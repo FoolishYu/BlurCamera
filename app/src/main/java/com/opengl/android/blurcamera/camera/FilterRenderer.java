@@ -139,9 +139,9 @@ public class FilterRenderer {
         mEffectTexture=createTextureID();
         initFloatBuffer();
         mPreviewSize=CameraInstance.getInstance().getmPreviewSize();
-        vertexShader= GLUtils.loadFromAssetsFile("vertexshader.vs",mContext.getAssets());
-        fragmentShader=GLUtils.loadFromAssetsFile("fragmentshader.vs",mContext.getAssets());
-        program=GLUtils.createProgram(vertexShader,fragmentShader);
+        vertexShader= GLUtil.loadFromAssetsFile("vertexshader.vs",mContext.getAssets());
+        fragmentShader= GLUtil.loadFromAssetsFile("fragmentshader.vs",mContext.getAssets());
+        program= GLUtil.createProgram(vertexShader,fragmentShader);
     }
     public int getmTexture(){return mTexture;}
 }
