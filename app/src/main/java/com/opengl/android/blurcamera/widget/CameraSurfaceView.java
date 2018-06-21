@@ -20,6 +20,8 @@ import com.opengl.android.blurcamera.camera.GLBitmap;
 
 import net.qiujuer.genius.blur.StackBlur;
 
+import java.util.Arrays;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -51,7 +53,7 @@ public class CameraSurfaceView extends GLSurfaceView implements GLSurfaceView.Re
         this.mContext=context;
         mSurfaceCallback = (MainActivity)context;
         bitmap = BitmapFactory.decodeResource(context.getResources(),
-                R.drawable.d3camera);
+                R.drawable.rb);
     }
 
     public interface SurfaceCallback {
@@ -116,6 +118,7 @@ public class CameraSurfaceView extends GLSurfaceView implements GLSurfaceView.Re
 
         float[] mtx = new float[16];
         mSurface.getTransformMatrix(mtx);
+        Log.e(TAG, "transformMatrix :" + Arrays.toString(mtx));
         mDirectDrawer.drawExt(mtx);
         if(mShowBitmap) {
             mDirectDrawer.draw(mtx, bitmap);

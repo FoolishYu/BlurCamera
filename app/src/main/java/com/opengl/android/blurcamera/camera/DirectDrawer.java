@@ -100,6 +100,7 @@ public class DirectDrawer {
         GLES20.glLinkProgram(mProgram);
     }
 
+    /// TODO: How to use matrix to do the transform instead of tell the camera id
     public void setCameraId(int cameraId) {
         // initialize vertex byte buffer for shape coordinates
         ByteBuffer bb = ByteBuffer.allocateDirect(squareCoords.length * 4);
