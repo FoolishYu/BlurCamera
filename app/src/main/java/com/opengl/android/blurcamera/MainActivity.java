@@ -63,13 +63,18 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
     @Override
     protected void onResume() {
         super.onResume();
+        if(mCameraSurfaceView != null) {
+            mCameraSurfaceView.onResume();
+        }
 //        mCameraSurfaceView.bringToFront();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mCameraSurfaceView.onPause();
+        if(mCameraSurfaceView != null) {
+            mCameraSurfaceView.onPause();
+        }
     }
 
     @Override

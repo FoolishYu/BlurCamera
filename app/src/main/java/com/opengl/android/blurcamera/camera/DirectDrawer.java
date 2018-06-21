@@ -2,6 +2,7 @@ package com.opengl.android.blurcamera.camera;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.hardware.Camera;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
@@ -66,7 +67,14 @@ public class DirectDrawer {
             1.0f,  1.0f,
     };
 
-    static float textureVertices[] = {
+    static float frontTextureVertices[] = {
+            1.0f, 1.0f,
+            0.0f, 1.0f,
+            0.0f, 0.0f,
+            1.0f, 0.0f,
+
+    };
+    static float backTextureVertices[] = {
             0.0f, 1.0f,
             1.0f, 1.0f,
             1.0f, 0.0f,
@@ -78,26 +86,6 @@ public class DirectDrawer {
     public DirectDrawer(int texture)
     {
         this.texture = texture;
-        // initialize vertex byte buffer for shape coordinates
-        ByteBuffer bb = ByteBuffer.allocateDirect(squareCoords.length * 4);
-        bb.order(ByteOrder.nativeOrder());
-        vertexBuffer = bb.asFloatBuffer();
-        vertexBuffer.put(squareCoords);
-        vertexBuffer.position(0);
-
-        // initialize byte buffer for the drawExt list
-        ByteBuffer dlb = ByteBuffer.allocateDirect(drawOrder.length * 2);
-        dlb.order(ByteOrder.nativeOrder());
-        drawListBuffer = dlb.asShortBuffer();
-        drawListBuffer.put(drawOrder);
-        drawListBuffer.position(0);
-
-        ByteBuffer bb2 = ByteBuffer.allocateDirect(textureVertices.length * 4);
-        bb2.order(ByteOrder.nativeOrder());
-        textureVerticesBuffer = bb2.asFloatBuffer();
-        textureVerticesBuffer.put(textureVertices);
-        textureVerticesBuffer.position(0);
-
         int vertexShader    = loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode);
         int extFragmentShader  = loadShader(GLES20.GL_FRAGMENT_SHADER, extFragmentShaderCode);
         int fragmentShader = loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode);
@@ -112,6 +100,35 @@ public class DirectDrawer {
         GLES20.glLinkProgram(mProgram);
     }
 
+    public void setCameraId(int cameraId) {
+        // initialize vertex byte buffer for shape coordinates
+        ByteBuffer bb = ByteBuffer.allocateDirect(squareCoords.length * 4);
+        bb.order(ByteOrder.nativeOrder());
+        vertexBuffer = bb.asFloatBuffer();
+        vertexBuffer.put(squareCoords);
+        vertexBuffer.position(0);
+
+        // initialize byte buffer for the drawExt list
+        ByteBuffer dlb = ByteBuffer.allocateDirect(drawOrder.length * 2);
+        dlb.order(ByteOrder.nativeOrder());
+        drawListBuffer = dlb.asShortBuffer();
+        drawListBuffer.put(drawOrder);
+        drawListBuffer.position(0);
+        if(cameraId == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+            ByteBuffer bb2 = ByteBuffer.allocateDirect(frontTextureVertices.length * 4);
+            bb2.order(ByteOrder.nativeOrder());
+            textureVerticesBuffer = bb2.asFloatBuffer();
+            textureVerticesBuffer.put(frontTextureVertices);
+            textureVerticesBuffer.position(0);
+        } else {
+            ByteBuffer bb2 = ByteBuffer.allocateDirect(backTextureVertices.length * 4);
+            bb2.order(ByteOrder.nativeOrder());
+            textureVerticesBuffer = bb2.asFloatBuffer();
+            textureVerticesBuffer.put(backTextureVertices);
+            textureVerticesBuffer.position(0);
+        }
+
+    }
     public void drawExt(float[] mtx)
     {
         GLES20.glUseProgram(mExtProgram);
@@ -132,7 +149,7 @@ public class DirectDrawer {
         GLES20.glEnableVertexAttribArray(mTextureCoordHandle);
 
 //        textureVerticesBuffer.clear();
-//        textureVerticesBuffer.put( transformTextureCoordinates( textureVertices, mtx ));
+//        textureVerticesBuffer.put( transformTextureCoordinates( backTextureVertices, mtx ));
 //        textureVerticesBuffer.position(0);
         GLES20.glVertexAttribPointer(mTextureCoordHandle, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, vertexStride, textureVerticesBuffer);
 
@@ -199,7 +216,7 @@ public class DirectDrawer {
         GLES20.glEnableVertexAttribArray(mTextureCoordHandle);
 
         //        textureVerticesBuffer.clear();
-        //        textureVerticesBuffer.put( transformTextureCoordinates( textureVertices, mtx ));
+        //        textureVerticesBuffer.put( transformTextureCoordinates( backTextureVertices, mtx ));
         //        textureVerticesBuffer.position(0);
         GLES20.glVertexAttribPointer(mTextureCoordHandle, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, vertexStride, textureVerticesBuffer);
 
