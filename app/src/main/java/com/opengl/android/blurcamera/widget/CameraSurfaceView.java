@@ -32,7 +32,7 @@ import javax.microedition.khronos.opengles.GL10;
 public class CameraSurfaceView extends GLSurfaceView implements GLSurfaceView.Renderer,SurfaceTexture.OnFrameAvailableListener, CameraInstance.CamOpenedCallback {
     public static final String TAG="CameraSurfaceView";
     private boolean mShowBitmap = false;
-    private boolean front = false;
+    private boolean front = true;
     private Context mContext;
     private SurfaceTexture mSurface;
     private int frameNum = 0;
@@ -86,7 +86,7 @@ public class CameraSurfaceView extends GLSurfaceView implements GLSurfaceView.Re
         //mTextureID=mFilterDrawer.getmTexture();
         mSurface = new SurfaceTexture(mTextureID);
         mSurface.setOnFrameAvailableListener(this);
-        CameraInstance.getInstance().doOpenCamera(null, false);
+        CameraInstance.getInstance().doOpenCamera(mContext, null, front);
         if(!CameraInstance.getInstance().isPreviewing()){
             CameraInstance.getInstance().doStartPreview(mSurface, 1.33f);
         }
@@ -165,7 +165,7 @@ public class CameraSurfaceView extends GLSurfaceView implements GLSurfaceView.Re
                 front = !front;
 
                 CameraInstance.getInstance().doStopCamera();
-                CameraInstance.getInstance().doOpenCamera(null, front);
+                CameraInstance.getInstance().doOpenCamera(mContext,null, front);
                 frameNum = 0;
                 CameraInstance.getInstance().doStartPreview(mSurface, 1.33f);
 

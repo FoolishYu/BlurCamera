@@ -1,11 +1,16 @@
 package com.opengl.android.blurcamera.camera;
 
+import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.util.Log;
+import android.view.Surface;
+
+import com.opengl.android.blurcamera.MainActivity;
 
 import java.io.IOException;
 import java.util.List;
@@ -17,6 +22,7 @@ import java.util.List;
 
 public class CameraInstance {
     private static final String TAG="CameraInstance";
+    private Context mContext;
     private Camera mCamera;
     private Camera.Parameters mParams;
     private static CameraInstance mCameraInstance;
@@ -58,8 +64,9 @@ public class CameraInstance {
         return mCameraInstance;
     }
 
-    public void doOpenCamera(CamOpenedCallback callback, boolean front){
+    public void doOpenCamera(Context context, CamOpenedCallback callback, boolean front){
         Log.i(TAG, "doOpenCamera....");
+        mContext = context;
         if(mCamera == null){
             if(front) {
                 isFront = front;
@@ -81,6 +88,30 @@ public class CameraInstance {
 
     }
 
+    public  void setCameraDisplayOrientation(Activity activity,
+                                                   int cameraId) {
+        android.hardware.Camera.CameraInfo info =
+                new android.hardware.Camera.CameraInfo();
+        android.hardware.Camera.getCameraInfo(cameraId, info);
+        int rotation = activity.getWindowManager().getDefaultDisplay()
+                .getRotation();
+        int degrees = 0;
+        switch (rotation) {
+            case Surface.ROTATION_0: degrees = 0; break;
+            case Surface.ROTATION_90: degrees = 90; break;
+            case Surface.ROTATION_180: degrees = 180; break;
+            case Surface.ROTATION_270: degrees = 270; break;
+        }
+        int result;
+        if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+            result = (info.orientation + degrees) % 360;
+            result = (360 - result) % 360;  // compensate the mirror
+        } else {  // back-facing
+            result = (info.orientation - degrees + 360) % 360;
+        }
+        mCamera.setDisplayOrientation(result);
+    }
+
     public void doStartPreview(SurfaceTexture surface, float previewRate){
         Log.i(TAG, "doStartPreview...");
         if(isPreviewing){
@@ -89,6 +120,14 @@ public class CameraInstance {
         }
         if(mCamera != null){
             try {
+                if(isFront) {
+                    setCameraDisplayOrientation((MainActivity)mContext, Camera.CameraInfo
+                            .CAMERA_FACING_FRONT);
+                } else {
+                    setCameraDisplayOrientation((MainActivity)mContext, Camera.CameraInfo
+                            .CAMERA_FACING_BACK);
+                }
+                //mCamera.setDisplayOrientation(90);
                 mCamera.setPreviewTexture(surface);
                 mCamera.setPreviewCallback(mPreviewCallback);
                 Camera.Parameters param = mCamera.getParameters();
