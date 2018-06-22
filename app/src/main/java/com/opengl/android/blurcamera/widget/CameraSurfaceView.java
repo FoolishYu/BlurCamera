@@ -97,6 +97,7 @@ public class CameraSurfaceView extends GLSurfaceView implements GLSurfaceView.Re
         GLES20.glViewport(0, 0, width, height);
     }
 
+    private float[]  oldMtx = null;
     @Override
     public void onDrawFrame(GL10 gl10) {
         GLES20.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -110,8 +111,15 @@ public class CameraSurfaceView extends GLSurfaceView implements GLSurfaceView.Re
         mSurface.getTransformMatrix(mtx);
         Log.e(TAG, "transformMatrix :" + Arrays.toString(mtx));
         mDirectDrawer.drawExternalOES(mtx);
+        if(oldMtx == null) {
+            oldMtx = mtx;
+        } else if(!Arrays.equals(oldMtx, mtx)) {
+            if(frameNum == -1) {
+                oldMtx = mtx;
+            }
+        }
         if(mShowBitmap) {
-            mDirectDrawer.drawBlurBitmap(mtx, bitmap);
+            mDirectDrawer.drawBlurBitmap(oldMtx, bitmap);
         }
     }
 

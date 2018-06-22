@@ -107,7 +107,6 @@ public class DirectDrawerImprove {
     }
 
 
-
     public void drawBlurBitmap(float[] matrix, Bitmap bitmap) {
         GLES20.glUseProgram(mProgram);
 

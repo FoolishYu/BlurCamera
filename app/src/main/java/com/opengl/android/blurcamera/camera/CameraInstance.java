@@ -127,7 +127,7 @@ public class CameraInstance {
                     setCameraDisplayOrientation((MainActivity)mContext, Camera.CameraInfo
                             .CAMERA_FACING_BACK);
                 }
-                //mCamera.setDisplayOrientation(90);
+//                mCamera.setDisplayOrientation(90);
                 mCamera.setPreviewTexture(surface);
                 mCamera.setPreviewCallback(mPreviewCallback);
                 Camera.Parameters param = mCamera.getParameters();
