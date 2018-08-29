@@ -15,8 +15,6 @@ import java.nio.FloatBuffer;
  */
 
 public class DirectDrawerImprove {
-
-    private static final String TAG = "DirectDrawerImprove";
     private static final int FLOAT_SIZE = 4;
     private static final int STRIDE     = 5 * FLOAT_SIZE;
     private static final int POS_OFFSET = 0;
@@ -82,7 +80,9 @@ public class DirectDrawerImprove {
 
     public void drawExternalOES(float[] matrix) {
         GLES20.glUseProgram(mOESProgram);
+        GLUtil.checkGLError("glUseProgram");
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+        GLUtil.checkGLError("glActiveTexture");
         GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, mTexture);
         GLUtil.checkGLError("glBindTexture");
         aPositionHandle = GLES20.glGetAttribLocation(mOESProgram, "aPosition");
@@ -97,39 +97,50 @@ public class DirectDrawerImprove {
         GLES20.glEnableVertexAttribArray(aInputTexCoordHandle);
         GLES20.glVertexAttribPointer(aInputTexCoordHandle, 2, GLES20.GL_FLOAT, false, STRIDE, vertexBuffer);
         GLUtil.checkGLError("glVertexAttribPointer");
-        GLES20.glUniformMatrix4fv(uvTransformHandle, 1, false, matrix, 0);
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
 
+        uvTransformHandle = GLES20.glGetUniformLocation(mProgram, "uvTransform");
+        GLES20.glUniformMatrix4fv(uvTransformHandle, 1, false, matrix, 0);
+        GLUtil.checkGLError("glDrawArrays 0");
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
+        GLUtil.checkGLError("glDrawArrays 1");
+        //解除纹理绑定
+        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0);
         // Disable vertex array
         GLES20.glDisableVertexAttribArray(aPositionHandle);
         GLES20.glDisableVertexAttribArray(aInputTexCoordHandle);
+        GLUtil.checkGLError("glDisableVertexAttribArray");
 
     }
 
 
     public void drawBlurBitmap(float[] matrix, Bitmap bitmap) {
-        GLES20.glUseProgram(mProgram);
 
+        GLES20.glUseProgram(mProgram);
+        GLUtil.checkGLError("drawBlurBitmap -4");
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTexture);
+        GLUtil.checkGLError("drawBlurBitmap -3");
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, (mTexture + 1));
+        GLUtil.checkGLError("drawBlurBitmap -2");
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
         GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
-
+        GLUtil.checkGLError("drawBlurBitmap 0");
         aPositionHandle = GLES20.glGetAttribLocation(mProgram, "aPosition");
         vertexBuffer.position(POS_OFFSET);// 0
         GLES20.glEnableVertexAttribArray(aPositionHandle);
         GLES20.glVertexAttribPointer(aPositionHandle, 3, GLES20.GL_FLOAT, false, STRIDE, vertexBuffer);
-
+        GLUtil.checkGLError("drawBlurBitmap 1");
         aInputTexCoordHandle = GLES20.glGetAttribLocation(mProgram, "aInputTextureCoord");
         vertexBuffer.position(UV_OFFSET);// 3
         GLES20.glEnableVertexAttribArray(aInputTexCoordHandle);
         GLES20.glVertexAttribPointer(aInputTexCoordHandle, 2, GLES20.GL_FLOAT, false, STRIDE, vertexBuffer);
 
         uvTransformHandle = GLES20.glGetUniformLocation(mProgram, "uvTransform");
+        GLUtil.checkGLError("drawBlurBitmap 2");
         GLES20.glUniformMatrix4fv(uvTransformHandle, 1, false, matrix, 0);
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
-
+        //解除纹理绑定
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
         // Disable vertex array
         GLES20.glDisableVertexAttribArray(aPositionHandle);
         GLES20.glDisableVertexAttribArray(aInputTexCoordHandle);

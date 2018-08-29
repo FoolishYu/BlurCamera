@@ -124,8 +124,11 @@ public class GLUtil {
             }
             GLES20.glDeleteShader(vertexShader);
             GLES20.glDeleteShader(fragShader);
+            Log.e(TAG,"Create Programe Successfully " + program);
+        } else {
+            Log.e(TAG,"Create Programe failed");
         }
-        Log.e(TAG,"Create Programe Successfully");
+
         return program;
     }
 
