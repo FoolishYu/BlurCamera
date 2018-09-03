@@ -31,6 +31,8 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
     private CameraSurfaceView mCameraSurfaceView;
     private boolean mShowRGB;
     private boolean mChangedCamera = false;
+    /// 预览frameAvailable开始后才可以切摄像头
+    private boolean mCanChangedCamera = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,10 +47,14 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-                mShowRGB = !mShowRGB;
-                mChangedCamera = true;
-                mCameraSurfaceView.setShowBitmap(mShowRGB);
+                if(mCanChangedCamera) {
+                    //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+
+                    mShowRGB = !mShowRGB;
+                    mChangedCamera = true;
+                    mCameraSurfaceView.setShowBitmap(mShowRGB);
+                    mCanChangedCamera = false;
+                }
             }
         });
 
@@ -85,7 +91,9 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
     @Override
     public void frameAvailable() {
         Log.e(TAG, "frameAvailable");
+        mCanChangedCamera = true;
         if(mChangedCamera) {
+            /// 如果是更改摄像头，则进行显示模糊
             mShowRGB = !mShowRGB;
             mCameraSurfaceView.setShowBitmap(mShowRGB);
             Camera.Size curSize = CameraInstance.getInstance().getmPreviewSize();

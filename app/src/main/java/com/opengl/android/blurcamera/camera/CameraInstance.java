@@ -131,11 +131,17 @@ public class CameraInstance {
                 mCamera.setPreviewTexture(surface);
                 mCamera.setPreviewCallback(mPreviewCallback);
                 Camera.Parameters param = mCamera.getParameters();
-//                if(isFront) {
-//                    param.setPreviewSize(720, 720);
-//                } else {
-//                    param.setPreviewSize(1920, 1080);
-//                }
+                if(isFront) {
+                    param.setPreviewSize(720, 720);
+                    if(mSizeChangedListener != null) {
+                        mSizeChangedListener.setPreviewSize(720, 720);
+                    }
+                } else {
+                    param.setPreviewSize(1920, 1080);
+                    if(mSizeChangedListener != null) {
+                        mSizeChangedListener.setPreviewSize(1920, 1080);
+                    }
+                }
                 mCamera.setParameters(param);
                 mCamera.startPreview();
             } catch (IOException e) {
@@ -258,4 +264,13 @@ public class CameraInstance {
             isPreviewing = true;
         }
     };
+
+
+    private PreviewSizeChangedListener mSizeChangedListener;
+    public void setPreviewSizeChangedListener(PreviewSizeChangedListener listener) {
+        mSizeChangedListener = listener;
+    }
+    public static interface PreviewSizeChangedListener {
+        public void setPreviewSize (int width, int height);
+    }
 }
