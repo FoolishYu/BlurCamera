@@ -20,6 +20,7 @@
 package net.qiujuer.genius.blur;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 /**
  * This is blur image class
@@ -120,10 +121,15 @@ final public class StackBlur extends StackNative {
         yuv2rgb(data, width, height,rgba);
         //blurPixels(rgba, width, height, radius);
         int ratio = findBestRatio(width, 160);
+        Log.e("StackBlur", "ratio " + ratio);
         Bitmap blurBmp = Bitmap.createBitmap(rgba, width, height, Bitmap.Config.ARGB_8888);
         Bitmap scaleBitmap = Bitmap.createScaledBitmap(blurBmp, width/ratio, height/ratio, false);
-        blurBmp = blur(scaleBitmap, radius, false);
-        return blurBmp;
+        if(ratio != 1) {
+            blurBmp.recycle();
+        }
+        blurBitmap(scaleBitmap, radius);
+        //blurBmp = blur(scaleBitmap, radius, false);
+        return scaleBitmap;
     }
     /**
      * StackBlur By Java Bitmap
